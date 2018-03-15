@@ -1,0 +1,6 @@
+<form action="{% url 'posts:createprofile' %}" method="POST">
+    {% csrf_token %}
+    Username: <input type="text" name="uname">
+    Password: <input type="password" name="pwd">
+    <input type="submit" name="submit" value="Submit">
+</form>
