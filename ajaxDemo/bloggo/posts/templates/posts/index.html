@@ -1,0 +1,65 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+
+    <h2>Add Post</h2>
+    Title: <input id="addtitle" type="text" name="title"> <br>
+    Body: <input id="addbody" type="text" name="body"> <br>
+    <button id="submit">Submit</button> <br>
+
+    <h2>Posts</h2>
+    {% if posts %}
+        <div id="list" class="postlist">
+        {% for post in posts %}
+            <div class="post">
+                <h3>{{ post.title }}</h3>
+                <em>{{ post.pub_date }}</em>
+                <p>{{ post.body }}</p>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p>No posts yet!</p>
+    {% endif %}
+
+<script type="text/javascript">
+
+function getCookie(name) {
+  var regexp = new RegExp("(?:^" + name + "|;\s*"+ name + ")=(.*?)(?:;|$)", "g");
+  var result = regexp.exec(document.cookie);
+  return (result === null) ? null : result[1];
+}
+
+
+console.log("Do somethings");
+    document.getElementById("submit").addEventListener("click", function() {
+        var title = document.getElementById("addtitle").value;
+        var body = document.getElementById("addbody").value;
+
+        var postData = new FormData();
+        postData.append("title", title);
+        postData.append("body", body);
+        
+        var headers = new Headers();
+
+        var csrftoken = getCookie("csrftoken")
+        console.log(csrftoken);
+        headers.append('X-CSRFToken', csrftoken);
+
+        fetch("/posts/add/", {
+            method: "POST",
+            body: postData,
+            headers: headers,
+            credentials: "include"
+        }).then(function(response) {
+            return response.json();
+        }).then(function(json) {
+            if (json.success) {
+                document.getElementById("list").innerHTML = "<div class='post'><h3>" + json.title + "</h3><em>" + json.pub_date + "</em><p>" + json.body + "</p></div>" + document.getElementById("list").innerHTML;
+            }
+        })
+    });
+</script>
+    
+{% endblock %}
+
